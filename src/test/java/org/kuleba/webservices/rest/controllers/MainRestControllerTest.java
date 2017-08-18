@@ -30,7 +30,7 @@ public class MainRestControllerTest {
 
     @Test
     public void testFindContactsLastPage() throws Exception {
-        this.mockMvc.perform(get("/hello/contacts/{page}", 6)).andDo(print()).andExpect(status().isOk())
+        this.mockMvc.perform(get("/hello/contacts/{page}", 13)).andDo(print()).andExpect(status().isOk())
                 .andExpect(content().string(containsString("\"last\" : true")));
     }
 

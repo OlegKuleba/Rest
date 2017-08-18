@@ -23,7 +23,7 @@ public class ContactRepositoryTest {
 
     @Test
     public void testFindAllContacts() {
-        long expectedAmount = 100;
+        long expectedAmount = 200;
         Page<Contact> contacts = contactRepository.findAll(new PageRequest(0, 15));
         assertThat(contacts.getTotalElements()).isEqualTo(expectedAmount);
     }
