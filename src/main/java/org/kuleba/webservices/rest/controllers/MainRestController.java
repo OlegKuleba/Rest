@@ -3,6 +3,7 @@ package org.kuleba.webservices.rest.controllers;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.kuleba.webservices.rest.BadPatternSyntaxException;
 import org.kuleba.webservices.rest.entities.Contact;
 import org.kuleba.webservices.rest.services.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Nullable;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/hello")
@@ -33,17 +36,25 @@ public class MainRestController {
     }
 
     @RequestMapping("contacts")
-    public Iterable<Contact> findContactsByRegex(@RequestParam(defaultValue = NAME_REGEX) String nameFilter) {
+    public List<Contact> findContactsByRegex(@RequestParam(defaultValue = NAME_REGEX) String nameFilter) {
 
+        Pattern pattern = null;
+        try {
+            pattern = Pattern.compile(nameFilter);
+        } catch (Exception e) {
+            throw new BadPatternSyntaxException();
+        }
+        Matcher matcher;
+        matcher = pattern.matcher("");
         Predicate<Contact> matchesWithRegex = new Predicate<Contact>() {
             @Override
-            public boolean apply(@Nullable Contact contact) {
-                return !contact.getName().matches(nameFilter);
+            public boolean apply(Contact contact) {
+                matcher.reset(contact.getName());
+                return !matcher.find();
             }
         };
 
-        Iterable<Contact> iterable = Iterables.filter(contactRepository.findAll(), matchesWithRegex);
-        return Lists.newArrayList(iterable);
+        return Lists.newArrayList(Iterables.filter(contactRepository.findAll(), matchesWithRegex));
     }
 
 }
