@@ -47,4 +47,10 @@ public class MainRestControllerTest {
                 .andExpect(status().isOk()).andExpect(content().string(not(containsString("A"))));
     }
 
+    @Test
+    public void testFindContactsByWrongRegex() throws Exception {
+        String wrongRegex = ".***$";
+        this.mockMvc.perform(get("/hello/contacts?nameFilter=" + wrongRegex)).andDo(print())
+                .andExpect(status().isNotFound());
+    }
 }
